@@ -15,8 +15,8 @@
 
 using namespace std;
 
-#define CONST_STEER 1500;
-#define CONST_SPEED 1520;
+#define CONST_STEER 0;
+#define CONST_SPEED 6;
 
 namespace narrow_path{
 
@@ -36,6 +36,8 @@ class NarrowPath{
 		//ros::Publisher pub = nh.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
 		int steer, speed;
 		double mean_point_right_y, mean_point_left_y, mean_point_y;
+		bool end_flag;
+		vector<obstacle_detector::CircleObstacle> rava_circles;
 		vector<obstacle_detector::CircleObstacle> right_circles;
 		vector<obstacle_detector::CircleObstacle> left_circles;
 };
