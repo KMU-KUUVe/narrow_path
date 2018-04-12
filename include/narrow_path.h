@@ -21,6 +21,14 @@ using namespace std;
 namespace narrow_path{
 
 class Narrow{
+	public:
+		NarrowPath();
+		NarrowPath(ros::NodeHandle nh);
+		void initSetup();
+		void obstacle_cb(const obstacle_detector::Obstacles data);
+	
+		bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b);
+
 	private:
 		ros::NodeHandle nh;
 		ros::Publisher pub;
@@ -30,18 +38,8 @@ class Narrow{
 		double mean_point_right_y, mean_point_left_y, mean_point_y;
 		vector<obstacle_detector::CircleObstacle> right_circles;
 		vector<obstacle_detector::CircleObstacle> left_circles;
-
-
-	public:
-		NarrowPath();
-		NarrowPath(ros::NodeHandle nh);
-		void initSetup();
-		void obstacle_cb(const obstacle_detector::Obstacles data);
-	
-		bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b);
 };
 
-bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
 		return (a.center.x < b.center.x);
 }
 
