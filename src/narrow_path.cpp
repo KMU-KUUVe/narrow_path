@@ -5,6 +5,13 @@ using namespace std;
 
 ros::Publisher pub;
 
+namespace narrow_path{
+
+NarrowPath::NarrowPath(){
+}
+
+NarrowPath::NarrowPath(ros::NodeHandle nh){
+}
 
 bool NarrowPath::cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
 	return (a.center.x < b.center.x);
@@ -78,4 +85,4 @@ void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
 }
 
 
-};
+}

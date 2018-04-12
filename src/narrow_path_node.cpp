@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]) {
 	ros:: init(argc, argv, "narrow_path_node");
-	NarrowPath::NarrowPath node;
+	narrow_path::NarrowPath node;
 	//node.run();
 
 	//ros::Subscriber sub = nh.subscribe("raw_obstacles", 1, obstacle_cb);
