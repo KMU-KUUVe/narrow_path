@@ -12,7 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-	geometry_msgs
+  geometry_msgs
+  ackermann_msgs
 )
 ## The catkin_package macro generates cmake config files for your package
 ## Declare things to be passed to dependent projects
@@ -33,10 +34,9 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
+include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} src/narrow_path.cpp)
+add_executable(${PROJECT_NAME} src/narrow_path.cpp src/narrow_path_node.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})

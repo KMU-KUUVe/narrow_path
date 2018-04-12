@@ -15,19 +15,19 @@
 
 using namespace std;
 
-#define CONST_STEER 0;
-#define CONST_SPEED 0;
+#define CONST_STEER 1500;
+#define CONST_SPEED 1520;
 
 namespace narrow_path{
 
-class Narrow{
+class NarrowPath{
 	public:
 		NarrowPath();
 		NarrowPath(ros::NodeHandle nh);
 		void initSetup();
 		void obstacle_cb(const obstacle_detector::Obstacles data);
 	
-		bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b);
+		static bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b);
 
 	private:
 		ros::NodeHandle nh;
@@ -39,8 +39,4 @@ class Narrow{
 		vector<obstacle_detector::CircleObstacle> right_circles;
 		vector<obstacle_detector::CircleObstacle> left_circles;
 };
-
-		return (a.center.x < b.center.x);
-}
-
 }
