@@ -27,10 +27,12 @@ class NarrowPath{
 		void initSetup();
 		void obstacle_cb(const obstacle_detector::Obstacles data);
 	
-		static bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b);
+		static bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
+			return (a.center.x < b.center.x);
+		}
 
 	private:
-		ros::NodeHandle nh;
+		ros::NodeHandle nh_;
 		ros::Publisher pub;
 		//ros::Subscriber sub = nh.subscribe("raw_obstacles", 1, obstacle_cb);
 		//ros::Publisher pub = nh.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
