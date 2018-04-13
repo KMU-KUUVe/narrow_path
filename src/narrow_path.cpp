@@ -3,40 +3,33 @@
 
 using namespace std;
 
-ros::Publisher pub;
-
-bool NarrowPath::cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
-	return (a.center.x < b.center.x);
-}
-
 namespace narrow_path{
 	
 	NarrowPath::NarrowPath():nh_(){
 		initSetup();
 	}
 	
-	NarrowPath::NarrowPath(ros::NodeHadle nh):nh_(nh){
+	NarrowPath::NarrowPath(ros::NodeHandle nh):nh_(nh){
 		initSetup();
 	}
 	
-	NarrowPath::void initSetup(){
+	void NarrowPath::initSetup(){
 		int steer = 0;
 		int speed = 6;
 		double mean_point_right_y = 0.0;
 		double mean_point_left_y = 0.0;
 		double mean_point_y = 0.0;
 		bool end_flag = false;	
+		ros::Publisher pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
+		ros::Subscriber sub = nh_.subscribe("raw_obstacle", 100, &NarrowPath::obstacle_cb, this);
 	}
 
 	void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
-	// vector init	
-		//vector<obstacle_detector::CircleObstacle> rava_circles;
-		//vector<obstacle_detector::CircleObstacle> left_circles;
-		//vector<obstacle_detector::CircleObstacle> right_circles;
 
 		// To filter rava obstacle by radius.
 		for(int i = 0; i < data.circles.size(); i++){
-			rava_circles.push_back(data.circles[i]);
+			//if(data.circles[i].radius > )
+				rava_circles.push_back(data.circles[i]);
 		}
 
 		for(int i = 0; i < rava_circles.size(); i++) {
@@ -104,24 +97,28 @@ namespace narrow_path{
 			steer = int(mean_point_y * -20) + CONST_STEER;
 			speed = CONST_SPEED;
 			cout << mean_point_y << " " << steer << " " << speed << endl;
-			
-			ackermann_msgs::AckermannDriveStamped msg;
-			msg.drive.steering_angle = steer;
-			msg.drive.speed = speed;
-			pub.publish(msg);
-
 		}
 		else{
 			int steer = 0; 
 			int speed = 0;
 			end_flag = true;
-
+		}
+		/*
+		ackermann_msgs::AckermannDriveStamped msg;
+		msg.drive.steering_angle = steer;
+		msg.drive.speed = speed;
+		pub.publish(msg);
+		*/
+	}
+	void NarrowPath::run(){
+		while(ros::ok()){
+			ros::spinOnce();
 			ackermann_msgs::AckermannDriveStamped msg;
 			msg.drive.steering_angle = steer;
 			msg.drive.speed = speed;
 			pub.publish(msg);
 		}
-
+	}
 	//std_msgs::String msg;
 	//msg.data = std::to_string(steer) + "," + std::to_string(speed) + ",";	 
 }//end namespace
