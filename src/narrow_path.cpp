@@ -1,5 +1,4 @@
 #include "narrow_path.h"
-//#include <string>
 
 using namespace std;
 
@@ -20,8 +19,8 @@ namespace narrow_path{
 		double mean_point_left_y = 0.0;
 		double mean_point_y = 0.0;
 		bool end_flag = false;	
-		ros::Publisher pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
-		ros::Subscriber sub = nh_.subscribe("raw_obstacle", 100, &NarrowPath::obstacle_cb, this);
+		pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
+		sub = nh_.subscribe("raw_obstacle", 100, &NarrowPath::obstacle_cb, this);
 	}
 
 	void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
