@@ -33,16 +33,22 @@ class NarrowPath{
 		}
 
 	private:
+		bool debug;
+
 		ros::NodeHandle nh_;
 		ros::Publisher pub;
 		ros::Subscriber sub;
-		//ros::Subscriber sub = nh.subscribe("raw_obstacles", 1, obstacle_cb);
-		//ros::Publisher pub = nh.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
-		int steer, speed;
-		double mean_point_right_y, mean_point_left_y, mean_point_y;
+
+		int steer;
+		int speed;
+		double mean_point_right_y;
+		double mean_point_left_y;
+		double mean_point_y;
 		bool end_flag;
+
 		vector<obstacle_detector::CircleObstacle> rava_circles;
 		vector<obstacle_detector::CircleObstacle> right_circles;
 		vector<obstacle_detector::CircleObstacle> left_circles;
+		ackermann_msgs::AckermannDriveStamped msg;
 };
 }
