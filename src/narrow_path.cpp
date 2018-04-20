@@ -13,8 +13,6 @@ NarrowPath::NarrowPath(ros::NodeHandle nh):nh_(nh){
 }
 
 void NarrowPath::initSetup(){
-	debug = false;
-
 	pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
 	sub = nh_.subscribe("raw_obstacles", 100, &NarrowPath::obstacle_cb, this);
 
@@ -29,6 +27,12 @@ void NarrowPath::initSetup(){
 }
 
 void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
+#ifdef DEBUG
+	ROS_INFO("Callback function called");
+#endif
+	rava_circles.clear();
+	right_circles.clear();
+	left_circles.clear();
 	// To filter rava obstacle by radius.
 	for(int i = 0; i < data.circles.size(); i++){
 		//if(data.circles[i].radius > )
@@ -62,17 +66,16 @@ void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
 	if(left_circles.size() > 1) //check vector is empty.
 		sort(left_circles.begin(), left_circles.end(), cmp);
 
-	if(debug){
-		cout << "right" << endl;
-		for(int i = 0; i < right_circles.size(); i++){
-			cout << right_circles[i].center << endl;
-		}
-		cout << "left" << endl;
-		for(int i = 0; i < left_circles.size(); i++){
-			cout << left_circles[i].center << endl;
-		}
+#ifdef DEBUG
+	cout << "right" << endl;
+	for(int i = 0; i < right_circles.size(); i++){
+		cout << right_circles[i].center << endl;
 	}
-
+	cout << "left" << endl;
+	for(int i = 0; i < left_circles.size(); i++){
+		cout << left_circles[i].center << endl;
+	}
+#endif
 	/*
 	   ackermann_msgs::AckermannDriveStamped msg;
 	   msg.drive.steering_angle = steer;
@@ -80,13 +83,17 @@ void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
 	   pub.publish(msg);
 	   */
 }
+void calculate_points(){
+}
+void publish(){
+}
 void NarrowPath::run(){
 	ros::Rate r(100);
 	while(ros::ok()){
+#ifdef DEBUG
+		ROS_INFO("While entered");
+#endif
 		ros::spinOnce();
-		cout << "enter while loop" << endl;
-		cout << left_circles.size() << endl;
-		cout << right_circles.size() << endl;
 
 		if(left_circles.size() >= 1 && right_circles.size() >= 1){
 		
@@ -108,7 +115,8 @@ void NarrowPath::run(){
 
 			steer = int(mean_point_y * -20) + CONST_STEER;
 			speed = CONST_SPEED;
-			cout << mean_point_y << " " << steer << " " << speed << endl;
+
+			ROS_INFO("Steer:%d Speed:%d", steer, speed);
 
 			msg.drive.steering_angle = steer;
 			msg.drive.speed = speed;

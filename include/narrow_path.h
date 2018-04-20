@@ -15,8 +15,9 @@
 
 using namespace std;
 
-#define CONST_STEER 0;
-#define CONST_SPEED 6;
+#define CONST_STEER 0
+#define CONST_SPEED 6
+//#define DEBUG
 
 namespace narrow_path{
 
@@ -27,13 +28,14 @@ class NarrowPath{
 		void initSetup();
 		void obstacle_cb(const obstacle_detector::Obstacles data);
 		void run();
+		void calculate_points();
+		void publish();
 	
 		static bool cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
 			return (a.center.x < b.center.x);
 		}
 
 	private:
-		bool debug;
 
 		ros::NodeHandle nh_;
 		ros::Publisher pub;
