@@ -16,8 +16,8 @@ void NarrowPath::initSetup(){
 	pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
 	sub = nh_.subscribe("raw_obstacles", 100, &NarrowPath::obstacle_cb, this);
 
-	steer = 0;
-	speed = 6;
+	steer = CONST_STEER;
+	speed = CONST_SPEED;
 	mean_point_right_y = 0.0;
 	mean_point_left_y = 0.0;
 	mean_point_y = 0.0;
@@ -35,8 +35,9 @@ void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
 	left_circles.clear();
 	// To filter rava obstacle by radius.
 	for(int i = 0; i < data.circles.size(); i++){
-		//if(data.circles[i].radius > )
-		rava_circles.push_back(data.circles[i]);
+		if(data.circles[i].radius > FILTER_RAVA_RADIUS){
+			rava_circles.push_back(data.circles[i]);
+		}
 	}
 
 	for(int i = 0; i < rava_circles.size(); i++) {
@@ -113,7 +114,7 @@ void NarrowPath::run(){
 
 			mean_point_y = mean_point_right_y + mean_point_left_y;
 
-			steer = int(mean_point_y * -20) + CONST_STEER;
+			steer = (mean_point_y * -STEER_WEIGHT) + CONST_STEER;
 			speed = CONST_SPEED;
 
 			ROS_INFO("Steer:%d Speed:%d", steer, speed);

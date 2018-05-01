@@ -17,6 +17,8 @@ using namespace std;
 
 #define CONST_STEER 0
 #define CONST_SPEED 6
+#define FILTER_RAVA_RADIUS 0.1
+#define STEER_WEIGHT 22
 //#define DEBUG
 
 namespace narrow_path{
