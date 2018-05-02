@@ -4,7 +4,10 @@
   <arg name="rviz_config_path" default="$(find narrow_path)/rviz_config/narrow_path.rviz" />
 
   <node pkg="narrow_path" name="narrow_path_node" type="narrow_path_node" output="screen">
-    <param name="CONST_SPEED" value="6"/>
+    <param name="CONST_SPEED" type="int"  value="6"/>
+    <param name="CONST_STEER" type="int"  value="0"/>
+    <param name="FILTER_RAVA_RADIUS" type="float"  value="0.1"/>
+    <param name="STEER_WEIGHT" type="int"  value="22"/>
   </node>
 
   <node pkg="rosbag" type="play" name="play" args="-l $(arg rosbag_path)"/> 
