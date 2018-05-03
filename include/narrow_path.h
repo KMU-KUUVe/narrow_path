@@ -49,6 +49,12 @@ class NarrowPath{
 		double mean_point_right_y;
 		double mean_point_left_y;
 		double mean_point_y;
+
+		int CONST_SPEED;
+		int CONST_STEER;
+		int STEER_WEIGHT;
+		float FILTER_RAVA_RADIUS;
+
 		bool end_flag;
 
 		vector<obstacle_detector::CircleObstacle> rava_circles;

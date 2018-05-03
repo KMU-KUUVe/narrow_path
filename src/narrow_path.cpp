@@ -4,7 +4,7 @@ using namespace std;
 
 namespace narrow_path{
 
-NarrowPath::NarrowPath():nh_(){
+NarrowPath::NarrowPath():nh_("~"){
 	initSetup();
 }
 
@@ -16,15 +16,15 @@ void NarrowPath::initSetup(){
 	pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
 	sub = nh_.subscribe("raw_obstacles", 100, &NarrowPath::obstacle_cb, this);
 
-	int CONST_SPEED;
-	int CONST_STEER;
-	float FILTER_RAVA_RADIUS;
-	int STEER_WEIGHT;
-	
 	nh_.getParam("CONST_SPEED", CONST_SPEED);
+	nh_.getParam("CONST_STEER", CONST_STEER);
+	nh_.getParam("STEER_WEIGHT", STEER_WEIGHT);
+
+	ROS_INFO("const_speed:%d steer:%d", CONST_SPEED, CONST_STEER);
 
 	steer = CONST_STEER;
 	speed = CONST_SPEED;
+
 	mean_point_right_y = 0.0;
 	mean_point_left_y = 0.0;
 	mean_point_y = 0.0;
@@ -37,7 +37,7 @@ void NarrowPath::obstacle_cb(const obstacle_detector::Obstacles data){
 #ifdef DEBUG
 	ROS_INFO("Callback function called");
 #endif
-	float FILTER_RAVA_RADIUS;
+	double FILTER_RAVA_RADIUS;
 	nh_.getParam("FILTER_RAVA_RADIUS", FILTER_RAVA_RADIUS);
 	rava_circles.clear();
 	right_circles.clear();
@@ -105,16 +105,8 @@ void NarrowPath::run(){
 #endif
 		ros::spinOnce();
 
-		int CONST_STEER;
-		int STEER_WEIGHT;
-		int CONST_SPEED;
-
-		nh_.getParam("CONST_SPEED", CONST_SPEED);
-		nh_.getParam("CONST_STEER", CONST_STEER);
-		nh_.getParam("STEER_WEIGHT", STEER_WEIGHT);
-
 		if(left_circles.size() >= 1 && right_circles.size() >= 1){
-		
+
 			if(right_circles.size() >=2){
 				mean_point_right_y = (right_circles[0].center.y + right_circles[1].center.y) / 2; 
 			}
@@ -133,22 +125,20 @@ void NarrowPath::run(){
 
 			steer = (mean_point_y * -STEER_WEIGHT) + CONST_STEER;
 			speed = CONST_SPEED;
-
-			ROS_INFO("Steer:%d Speed:%d", steer, speed);
-
 			msg.drive.steering_angle = steer;
 			msg.drive.speed = speed;
 			pub.publish(msg);
 		}
+		ROS_INFO("Steer:%d Speed:%d", steer, speed);
 		r.sleep();
 	}
 }
-	//std_msgs::String msg;
-	//msg.data = std::to_string(steer) + "," + std::to_string(speed) + ",";	 
-	/*
-static bool NarrowPath::cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
-	return (a.center.x < b.center.x);
-}
-*/
+//std_msgs::String msg;
+//msg.data = std::to_string(steer) + "," + std::to_string(speed) + ",";	 
+/*
+   static bool NarrowPath::cmp(const obstacle_detector::CircleObstacle a, const obstacle_detector::CircleObstacle b){
+   return (a.center.x < b.center.x);
+   }
+   */
 
 }//end namespace
