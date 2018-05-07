@@ -13,7 +13,7 @@ NarrowPath::NarrowPath(ros::NodeHandle nh):nh_(nh){
 }
 
 void NarrowPath::initSetup(){
-	pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("ackermann", 100);
+	pub = nh_.advertise<ackermann_msgs::AckermannDriveStamped> ("/ackermann", 100);
 	sub = nh_.subscribe("/raw_obstacles", 100, &NarrowPath::obstacle_cb, this);
 
 	nh_.getParam("CONST_SPEED", CONST_SPEED);
@@ -143,11 +143,11 @@ void NarrowPath::run(){
 
 			steer = (mean_point_y * -STEER_WEIGHT) + CONST_STEER;
 			speed = CONST_SPEED;
-			if(steer > 27){
-				steer = 27;
+			if(steer > 26){
+				steer = 26;
 			}
-			if(steer < -27){
-				steer = -27;
+			if(steer < -26){
+				steer = -26;
 			}
 			msg.drive.steering_angle = steer;
 			msg.drive.speed = speed;
