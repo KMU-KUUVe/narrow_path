@@ -114,7 +114,7 @@ void NarrowPath::run(){
 		if(left_circles.size() >= 1 && right_circles.size() >= 1){
 			end_flag = false;
 
-			if(abs(right_circles[0].center.x-left_circles[0].center.x) > 0.5){
+			if(abs(right_circles[0].center.x-left_circles[0].center.x) > 0.4){
 				mean_point_y = 0;
 				ROS_INFO("one_side detect")
 			}
