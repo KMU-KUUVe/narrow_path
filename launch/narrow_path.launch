@@ -13,6 +13,7 @@
 	  <param name="control_factor" value="110" />
 	  <param name="right_steer_scale" type = "double" value="1.5" />
 	  <param name="throttle" value="3" />
+	  <param name="stop_count" value="100" />
   </node>
 
   <node name="obstacle_extractor" pkg="obstacle_detector" type="obstacle_extractor_node">
