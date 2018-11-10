@@ -46,6 +46,7 @@ class narrow_path:
 		while not rospy.is_shutdown():
 			if(self.finish_flag == True):
 				self.server.set_succeeded(result)	
+				break
 			r.sleep()
 
 	def obstacles_cb(self, data):
