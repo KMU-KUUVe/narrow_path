@@ -22,7 +22,6 @@ class narrow_path:
 
 		self.server = actionlib.SimpleActionServer('narrow_path', MissionPlannerAction, execute_cb=self.execute_cb, auto_start=False)
 		self.server.start()
-		self.result = MissionPlannerResult()
 	
 		self.wayPoint = Point(1,0,0)
 		
@@ -31,6 +30,8 @@ class narrow_path:
 		self.right_steer_scale = rospy.get_param("/narrow_path/right_steer_scale", 2.0)	
 		self.throttle = rospy.get_param("/narrow_path/throttle", 0)
 		self.stop_count= rospy.get_param("/narrow_path/stop_count", 100)
+
+		self.start_flag = False
 		self.finish_flag = False
 	
 	def updateParam(self):
@@ -40,64 +41,71 @@ class narrow_path:
 		print("right_steer_scale: " + str(self.right_steer_scale))
 	
 	def execute_cb(self, goal):
+		rospy.loginfo("narrow execute_cb")
 		self.sub = rospy.Subscriber('raw_obstacles', Obstacles, self.obstacles_cb)
+
+		result = MissionPlannerResult()
+
+		self.start_flag = True
 
 		r = rospy.Rate(100)
 		while not rospy.is_shutdown():
 			if(self.finish_flag == True):
+				self.start_flag = False
 				self.server.set_succeeded(result)	
 				break
 			r.sleep()
 
 	def obstacles_cb(self, data):
-		self.updateParam()
-	
-		x_center = 0
-		y_center = 0
-		#find wayPoint 
-		for segment_data in data.segments:
-			x_center = x_center + segment_data.first_point.x
-			x_center = x_center + segment_data.last_point.x
-			y_center = y_center + segment_data.first_point.y
-			y_center = y_center + segment_data.last_point.y
-		if (x_center == 0):
-			self.count[0] = self.count[0] + 1
-			print("mission count : %d", self.count[0])
-			acker_data = AckermannDriveStamped()
-			acker_data.drive.speed = self.throttle 
-			acker_data.drive.steering_angle = 0	 
-			print("speed : " + str(acker_data.drive.speed))
-			print("steering : " + str(acker_data.drive.steering_angle))
-			self.pub.publish(acker_data) 
-			
-				     
-		else:
-			#self.count[0] = 0;
-			x_center = x_center/len(data.segments)
-			y_center = y_center/len(data.segments)
-			self.wayPoint = Point(x_center,y_center,0)
-               
-			print(self.wayPoint)
-			#if detect segment, up start signal and start mission
-			self.start_signal = 1
-			print("during narrow mission")
-			print("#######################################################")
-			acker_data = AckermannDriveStamped()
-			acker_data.drive.speed = self.throttle		
-			steer_angle = math.atan(self.wayPoint.y/self.wayPoint.x)
-			acker_data.drive.steering_angle = int(-(self.control_factor*steer_angle)/math.pi)
-			if (acker_data.drive.steering_angle > 0):
-				acker_data.drive.steering_angle = int(acker_data.drive.steering_angle/self.right_steer_scale)
-			if (acker_data.drive.steering_angle > 26):
-				acker_data.drive.steering_angle = 26
-			elif (acker_data.drive.steering_angle < -26):
-				acker_data.drive.steering_angle = -26
-			print("speed : " + str(acker_data.drive.speed))
-			print("steering : " + str(acker_data.drive.steering_angle))
+		if start_flag == True:
+			self.updateParam()
+		
+			x_center = 0
+			y_center = 0
+			#find wayPoint 
+			for segment_data in data.segments:
+				x_center = x_center + segment_data.first_point.x
+				x_center = x_center + segment_data.last_point.x
+				y_center = y_center + segment_data.first_point.y
+				y_center = y_center + segment_data.last_point.y
+			if (x_center == 0):
+				self.count[0] = self.count[0] + 1
+				print("mission count : %d", self.count[0])
+				acker_data = AckermannDriveStamped()
+				acker_data.drive.speed = self.throttle 
+				acker_data.drive.steering_angle = 0	 
+				print("speed : " + str(acker_data.drive.speed))
+				print("steering : " + str(acker_data.drive.steering_angle))
+				self.pub.publish(acker_data) 
+				
+					     
+			else:
+				#self.count[0] = 0;
+				x_center = x_center/len(data.segments)
+				y_center = y_center/len(data.segments)
+				self.wayPoint = Point(x_center,y_center,0)
+		       
+				print(self.wayPoint)
+				#if detect segment, up start signal and start mission
+				self.start_signal = 1
+				print("during narrow mission")
+				print("#######################################################")
+				acker_data = AckermannDriveStamped()
+				acker_data.drive.speed = self.throttle		
+				steer_angle = math.atan(self.wayPoint.y/self.wayPoint.x)
+				acker_data.drive.steering_angle = int(-(self.control_factor*steer_angle)/math.pi)
+				if (acker_data.drive.steering_angle > 0):
+					acker_data.drive.steering_angle = int(acker_data.drive.steering_angle/self.right_steer_scale)
+				if (acker_data.drive.steering_angle > 26):
+					acker_data.drive.steering_angle = 26
+				elif (acker_data.drive.steering_angle < -26):
+					acker_data.drive.steering_angle = -26
+				print("speed : " + str(acker_data.drive.speed))
+				print("steering : " + str(acker_data.drive.steering_angle))
 
-			if(self.count[0] > self.stop_count):
-				self.finish_flag = True
-			self.pub.publish(acker_data)
+				if(self.count[0] > self.stop_count):
+					self.finish_flag = True
+				self.pub.publish(acker_data)
 		
 		
 if __name__ == '__main__':
