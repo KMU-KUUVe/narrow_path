@@ -57,7 +57,7 @@ class narrow_path:
 			r.sleep()
 
 	def obstacles_cb(self, data):
-		if start_flag == True:
+		if self.start_flag == True:
 			self.updateParam()
 		
 			x_center = 0
