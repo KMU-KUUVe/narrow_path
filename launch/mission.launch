@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="narrow_path_laser_filter">
 	  <rosparam command="load" file="$(find narrow_path)/launch/box_filter.yaml" />
 	  <remap from="scan_filtered" to="narrow_path_scan_filtered"/>
   </node>
@@ -17,12 +17,12 @@
 	  <param name="right_steer_scale" type = "double" value="1.5" />
 	  <param name="throttle" value="3" />
 	  <param name="stop_count" value="1000" />
-	  <param name="start_distance" type="double" value="1.0" />
+	  <param name="start_distance" type="double" value="0.5" />
 	  <param name="end_distance" type="double" value="0.5" />
 	  <param name="approach_left_offset" value="7" />
   </node>
 
-  <node name="obstacle_extractor" pkg="obstacle_detector" type="obstacle_extractor_node">
+  <node name="narrow_path_obstacle_extractor" pkg="obstacle_detector" type="obstacle_extractor_node">
 	<remap from="scan" to="narrow_path_scan_filtered"/>
 	<remap from="raw_obstacles" to="narrow_path_raw_obstacles"/>
     <param name="active"               value="true"/>
@@ -64,7 +64,7 @@
     <param name="max_group_distance"   value="0.1"/>
     <param name="distance_proportion"  value="0.00628"/>
     <param name="max_split_distance"   value="0.2"/>
-    <param name="max_merge_separation" value="1.5"/>
+    <param name="max_merge_separation" value="0.5"/>
     <param name="max_merge_spread"     value="0.2"/>
     <param name="max_circle_radius"    value="0.1"/>
     <param name="radius_enlargement"   value="0.3"/>

@@ -85,6 +85,65 @@ class narrow_path:
 		x_center = x_center/len(data.segments)
 		y_center = y_center/len(data.segments)
 		self.wayPoint = Point(x_center,y_center,0)
+		print(self.wayPoint)
+		#if detect segment, up start signal and start mission
+		self.start_signal = 1
+		print("during narrow mission")
+		print("#######################################################")
+		acker_data = AckermannDriveStamped()
+		acker_data.drive.speed = self.throttle		
+		steer_angle = math.atan(self.wayPoint.y/self.wayPoint.x)
+		acker_data.drive.steering_angle = int(-(self.control_factor*steer_angle)/math.pi)
+		if self.start_flag == True and acker_data.drive.steering_angle < 0:
+			acker_data.drive.steering_angle = acker_data.drive.steering_angle - self.approach_left_offset
+	
+		if (acker_data.drive.steering_angle <= 0):
+			acker_data.drive.steering_angle = acker_data.drive.steering_angle - 4
+
+		if (acker_data.drive.steering_angle > 0):
+			acker_data.drive.steering_angle = int(acker_data.drive.steering_angle/self.right_steer_scale)
+		if (acker_data.drive.steering_angle > 26):
+			acker_data.drive.steering_angle = 26
+		elif (acker_data.drive.steering_angle < -26):
+			acker_data.drive.steering_angle = -26
+		print("speed : " + str(acker_data.drive.speed))
+		print("steering : " + str(acker_data.drive.steering_angle))
+
+		if not self.finish_flag:
+			self.pub.publish(acker_data)
+
+	def narrow_pathing_approach(self, data):
+		self.updateParam()
+	
+		x_center = 0
+		y_center = 0
+
+		nearest_x = 100.0
+		nearest_y_1 = -100.0
+		nearest_y_2 = 100.0
+		for segment_data in data.segments:
+			if nearest_x > segment_data.first_point.x:
+				nearest_x = segment_data.first_point.x
+			if nearest_x > segment_data.last_point.x:
+				nearest_x = segment_data.last_point.x
+			if segment_data.first_point.y < 0:
+				if nearest_y_1 < segment_data.first_point.y:
+					nearest_y_1 = segment_data.first_point.y
+				if nearest_y_1 < segment_data.last_point.y:
+					nearest_y_1 = segment_data.last_point.y
+			if segment_data.first_point.y >= 0:
+				if nearest_y_2 > segment_data.first_point.y:
+					nearest_y_2 = segment_data.first_point.y
+				if nearest_y_2 > segment_data.last_point.y:
+					nearest_y_2 = segment_data.last_point.y
+			
+			
+		x_center = nearest_x
+		y_center = nearest_y_1 + nearest_y_2
+
+		x_center = x_center
+		y_center = y_center/2
+		self.wayPoint = Point(x_center,y_center,0)
        
 		print(self.wayPoint)
 		#if detect segment, up start signal and start mission
@@ -97,6 +156,11 @@ class narrow_path:
 		acker_data.drive.steering_angle = int(-(self.control_factor*steer_angle)/math.pi)
 		if self.start_flag == True and acker_data.drive.steering_angle < 0:
 			acker_data.drive.steering_angle = acker_data.drive.steering_angle - self.approach_left_offset
+	
+		if (acker_data.drive.steering_angle <= 0):
+			acker_data.drive.steering_angle = acker_data.drive.steering_angle - 10
+		else:
+			acker_data.drive.steering_angle = acker_data.drive.steering_angle
 
 		if (acker_data.drive.steering_angle > 0):
 			acker_data.drive.steering_angle = int(acker_data.drive.steering_angle/self.right_steer_scale)
@@ -115,7 +179,7 @@ class narrow_path:
 	def approach_cb(self, data):
 		if self.start_flag == True:
 			rospy.loginfo("approaching")
-			self.narrow_pathing(data)
+			self.narrow_pathing_approach(data)
 
 			nearest_x = 100.0
 			for segment_data in data.segments:
