@@ -60,11 +60,11 @@ class narrow_path:
 				self.approach_flag = False
 
 				# FIXME: for test
-				acker_data = AckermannDriveStamped()
-				acker_data.drive.speed = 0
-				acker_data.drive.steering_angle = 0	 
+				#acker_data = AckermannDriveStamped()
+				#acker_data.drive.speed = 0
+				#acker_data.drive.steering_angle = 0	 
 				rospy.loginfo("finish narrow path")
-				self.pub.publish(acker_data) 
+				#self.pub.publish(acker_data) 
 
 				self.server.set_succeeded(result)	
 				break
